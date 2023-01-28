@@ -42,8 +42,8 @@ $(document).ready(function () {
   });
 
   $(".search-button").click(function () {
-    alert("Haha!! You'll have to implement this!");
-
+    //alert("Haha!! You'll have to implement this!");
+	
     let nameToSearch = $(".search-box-input").val();
     getAllUsersByNameLike(nameToSearch);
   });
@@ -119,56 +119,72 @@ function getAllUsers() {
 
 function getAllUsersByNameLike(nameToSearch) {
   console.log(nameToSearch);
+  var form = new FormData();
+
+  var settings = {
+    url: backendServer + "/usersbyname/" + nameToSearch,
+    method: "GET",
+    timeout: 0,
+    processData: false,
+    mimeType: "multipart/form-data",
+    contentType: false,
+  };
+  
   // Construa a request para o endpoint do backend. No retorno, você pode usar renderização na tabela aproveitando o código abaixo:
+	$.ajax(settings).done(function (response) {
+   let users = JSON.parse(response);
+   let tableBody = "";
 
-  // let users = JSON.parse(response);
-  // let tableBody = "";
+   if (users.length == 0) {
+     $(".table.table-striped.table-hover").hide();
+     $(".table.table-striped.table-hover").before(
+       '<div class="no-user-div">Ainda não existem usuários cadastrados.</div>'
+     );
+   } else {
+	 $("#maintable").empty();
+     $.each(users, function (key, value) {
+       let row = `
+         <tr id="${value.id}">
+           <td>
+             <span class="custom-checkbox">
+               <input
+                 type="checkbox"
+                 id="checkbox1"
+                 name="options[]"
+                 value="1"
+               />
+               <label for="checkbox1"></label>
+             </span>
+           </td>
+           <td>${value.name}</td>
+           <td>${value.email}</td>
+           <td>${value.username}</td>
+           <td>${value.type}</td>
+           <td>${value.active == 1 ? "Sim" : "Não"}</td>
+           <td>
+             <a href="#editEmployeeModal" class="edit" data-toggle="modal" style="color: grey;">
+               <i class="material-icons" data-toggle="tooltip" title="Edit" onclick="loadEditUser(${
+                 value.id
+               });">&#xE254;</i>
+             </a>
+             <a href="#deleteEmployeeModal" class="delete" data-toggle="modal" style="color: #F08080;">
+               <i class="material-icons" data-toggle="tooltip" title="Delete" onclick="userToBeRemoved(${
+                 value.id
+               });">&#xE872;</i>
+             </a>
+           </td>
+         </tr>
+       `;
 
-  // if (users.length == 0) {
-  //   $(".table.table-striped.table-hover").hide();
-  //   $(".table.table-striped.table-hover").before(
-  //     '<div class="no-user-div">Ainda não existem usuários cadastrados.</div>'
-  //   );
-  // } else {
-  //   $.each(users, function (key, value) {
-  //     let row = `
-  //       <tr id="${value.id}">
-  //         <td>
-  //           <span class="custom-checkbox">
-  //             <input
-  //               type="checkbox"
-  //               id="checkbox1"
-  //               name="options[]"
-  //               value="1"
-  //             />
-  //             <label for="checkbox1"></label>
-  //           </span>
-  //         </td>
-  //         <td>${value.name}</td>
-  //         <td>${value.email}</td>
-  //         <td>${value.username}</td>
-  //         <td>${value.type}</td>
-  //         <td>${value.active == 1 ? "Sim" : "Não"}</td>
-  //         <td>
-  //           <a href="#editEmployeeModal" class="edit" data-toggle="modal" style="color: grey;">
-  //             <i class="material-icons" data-toggle="tooltip" title="Edit" onclick="loadEditUser(${
-  //               value.id
-  //             });">&#xE254;</i>
-  //           </a>
-  //           <a href="#deleteEmployeeModal" class="delete" data-toggle="modal" style="color: #F08080;">
-  //             <i class="material-icons" data-toggle="tooltip" title="Delete" onclick="userToBeRemoved(${
-  //               value.id
-  //             });">&#xE872;</i>
-  //           </a>
-  //         </td>
-  //       </tr>
-  //     `;
-
-  //     tableBody += row;
-  //   });
-  // }
-  // // console.log(tableBody);
-  // $("#maintable").append(tableBody);
+       tableBody += row;
+     });
+   }
+   // console.log(tableBody);
+   $("#maintable").append(tableBody);
+   })
+   .fail(function (response, textStatus) {
+	   $("#maintable").empty();
+   });
 }
 
 function addUser() {

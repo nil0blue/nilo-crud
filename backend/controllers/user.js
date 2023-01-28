@@ -107,3 +107,20 @@ exports.deleteAll = (req, res) => {
     else res.send({ message: `All Users were deleted successfully!` });
   });
 };
+
+// Search users with userId Like
+exports.getUsersLike = (req, res) => {
+  User.getUsersLike(req.params.userName, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found Users with name like ${req.params.userName}.`,
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving Users with name like " + req.params.userName,
+        });
+      }
+    } else res.send(data);
+  });
+};

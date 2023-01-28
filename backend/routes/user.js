@@ -7,6 +7,12 @@ module.exports = (app) => {
   // Retrieve all Users
   app.get("/users", users.getAll);
 
+  // Search
+  app.get("/usersbyname/:userName", users.getUsersLike);
+  
+  // Retrieve all Users
+  app.get("/usersbyname/", users.getAll);
+  
   // Retrieve a single User with userId
   app.get("/users/:userId", users.get);
 
@@ -18,4 +24,5 @@ module.exports = (app) => {
 
   // Delete all Users
   app.delete("/users", users.deleteAll);
+  
 };

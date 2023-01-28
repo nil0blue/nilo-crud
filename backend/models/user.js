@@ -110,4 +110,25 @@ User.removeAll = result => {
   });
 };
 
+User.getUsersLike = (userName, result) => {
+	console.log(`SELECT * FROM users WHERE username LIKE "%${userName}%"`);
+  conn.query(`SELECT * FROM users WHERE username LIKE "%${userName}%"`, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+
+	if (res.length) {
+      console.log("found users: ", res);
+      result(null, res);
+      return;
+    }
+
+    // not found User with the name like
+    result({ kind: "not_found" }, null);
+    
+  });
+};
+
 module.exports = User;
